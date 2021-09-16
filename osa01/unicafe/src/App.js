@@ -15,9 +15,25 @@ const Button = ({ handleClick, text }) => (
   </button>
 )
 
-const Statistics = ({name, value}) =>{
+const StatisticsLine = ({name, value}) =>{
   return(
     <div>{name+' '+value}</div>
+  )
+}
+
+const Statistics = ({good,neutral,bad}) =>{
+  if( (good+neutral+bad)===0 ){
+    return (<div>no feedback given</div>)
+  }  
+  return(
+    <>
+    <StatisticsLine name="Good" value={good} />
+    <StatisticsLine name="Neutral" value={neutral} />
+    <StatisticsLine name="Bad" value={bad} />
+    <StatisticsLine name="All" value={good+neutral+bad} />
+    <StatisticsLine name="Average" value={(good-bad)/(good+bad+neutral) } />
+    <StatisticsLine name="Positive" value={(good)/(good+bad+neutral)*100+' %'} />
+    </>
   )
 }
 
@@ -26,10 +42,11 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
-
+  
   const increaseGood = () => setGood(good + 1)
   const increaseNeutral = () => setNeutral(neutral + 1)
-  const increaseBad = () => setBad(bad + 1)
+  const increaseBad = () => setBad(bad + 1) 
+  
 
   return (
     <div>
@@ -47,10 +64,7 @@ const App = () => {
         text='Bad'
       />
       <Header header="Statistics" />
-      <Statistics name="Good" value={good} />
-      <Statistics name="Neutral" value={neutral} />
-      <Statistics name="Bad" value={bad} />
-      <Statistics name="All" value={good+neutral+bad} />
+      <Statistics good={good} neutral={neutral} bad={bad} />
 
     </div>
   )
