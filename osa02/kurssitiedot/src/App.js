@@ -1,4 +1,5 @@
 import React from 'react'
+import { Course } from './components/Course'
 
 
 const MainHeader = ({mainheader}) => {
@@ -8,6 +9,7 @@ const MainHeader = ({mainheader}) => {
   )
   
 }
+/*
 const Header = ({coursename}) => {
   
   return(
@@ -60,7 +62,7 @@ const Course = ({course}) => {
     </li>    
   )
 }
-
+*/
 const Courses = ({courses}) => {
   return(
     <ul>
