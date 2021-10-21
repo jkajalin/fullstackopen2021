@@ -6,6 +6,40 @@ const Person = ({person}) =>{
   )
 }
 
+const Input = ({inputlabel, inputvalue, handler }) =>{
+  return (
+    <div>
+      {inputlabel}: <input
+       value={inputvalue}
+       onChange={handler}
+      />
+    </div>
+  )
+}
+
+const PersonForm = ({submitfunction,newName,newPhone,handleNameChange,handleNewNumberChange}) => {
+  return(
+    <form onSubmit={submitfunction}>
+       
+        <Input inputlabel={'name'} inputvalue={newName} handler={handleNameChange} />        
+        <Input inputlabel={'number'} inputvalue={newPhone} handler={handleNewNumberChange} />
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+  )
+}
+
+const Persons = ({personsFiltered}) => {
+  return(
+    <ul>
+        {personsFiltered.map(person => 
+            <Person key={person.name} person={person}  />
+        )}
+    </ul>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', phone: '040-123456' },
@@ -32,19 +66,17 @@ const App = () => {
     }else{
       setPersons(persons.concat(personObject))
       setNewName('') 
-      setNewPhone(' ')   
+      setNewPhone(' ')
+      setPersonsFiltered( persons.concat(personObject) )   
     }
-      
-    
   }
+  
   const handleNameChange = (event) => {    
     setNewName(event.target.value)
   }
   const handleNewNumberChange = (event) => {
     setNewPhone(event.target.value)
   }
-
-  
 
   const handleFilterChange = (event) => {
     setFilterText(event.target.value)    
@@ -57,45 +89,19 @@ const App = () => {
       console.log('show persons')
       setPersonsFiltered( persons )
       
-    }
-    
+    }    
   }
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      <div>
-          filter numbers: <input
-            value={filterText}
-            onChange={handleFilterChange}
-            />
-      </div>
-
+      <h2>Phonebook</h2> 
+      <Input inputlabel={'Filter numbers:'} inputvalue={filterText} handler={handleFilterChange} />
       <h2>add New</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          name: <input
-            value={newName}
-            onChange={handleNameChange}
-            />
-        </div>
-        <div>
-          number: <input
-            value={newPhone}
-            onChange={handleNewNumberChange}
-            />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm submitfunction={addPerson} newName={newName} newPhone={newPhone} handleNameChange={handleNameChange} handleNewNumberChange={handleNewNumberChange} />
       <h2>Numbers</h2>
-      <ul>
-        {personsFiltered.map(person => 
-            <Person key={person.name} person={person}  />
-        )}
-      </ul>
-      ...
+      <Persons personsFiltered={personsFiltered} />
+      
+      ---
       <div>debug: {newName}</div>
       <div>debug Phone: {newPhone}</div>
       <div>debug filer text: {filterText}</div>
@@ -103,5 +109,4 @@ const App = () => {
   )
 
 }
-
 export default App
