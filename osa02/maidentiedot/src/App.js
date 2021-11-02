@@ -1,6 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const Input = ({inputlabel, inputvalue, handler }) =>{
+  return (
+    <div>
+      {inputlabel}: <input
+       value={inputvalue}
+       onChange={handler}
+      />
+    </div>
+  )
+}
+
+const ShowButton = ({btntext,handler,value}) =>{
+  return(
+    <>
+      <button onClick={handler} value={value}>{btntext}</button>  
+    </>
+  )
+}
+
+const TextLine = ({text}) =>{
+  return(
+    <div>
+      <br />{text}
+    </div>
+  ) 
+}
 
 const ListItem = ({listitem}) =>{
   return(
@@ -8,20 +34,20 @@ const ListItem = ({listitem}) =>{
   )
 }
 
-const CountriesList = ({countries}) => {  
+const CountriesList = ({countries, btnHandler}) => {  
   return(
     <ul>
         {countries.map(country => 
-          <ListItem key={country.ccn3} listitem={country.name.common} />
+          <><ListItem key={country.ccn3} listitem={country.name.common} /><ShowButton btntext={'show'} handler={btnHandler} value={country.ccn3} /></>
         )}
     </ul>
   )
 }
 
-const CountriesContent = ({countries}) => {
+const CountriesContent = ({countries, btnHandler}) => {
   if(countries.length>1 && countries.length<=10){
     return(
-      <CountriesList countries={countries} />
+      <CountriesList countries={countries} btnHandler={btnHandler} />
     )
   }
   else if(countries.length>10){
@@ -38,25 +64,6 @@ const CountriesContent = ({countries}) => {
   return(
     <TextLine text={'Find country details'} />    
   )
-}
-
-const Input = ({inputlabel, inputvalue, handler }) =>{
-  return (
-    <div>
-      {inputlabel}: <input
-       value={inputvalue}
-       onChange={handler}
-      />
-    </div>
-  )
-}
-
-const TextLine = ({text}) =>{
-  return(
-    <div>
-      <br />{text}
-    </div>
-  ) 
 }
 
 const CountryLanguages = ({langs}) =>{
@@ -83,8 +90,8 @@ const CountryDetails = ({country}) =>{
       <h2>{country.name.common}</h2>
       <p>
         {country.capital}        
-        <br />Population {country.population}
-        <br />
+        <br />Population: {country.population}
+        <br />ccn3: {country.ccn3}
         
       </p>
       <CountryLanguages langs={country.languages} />
@@ -115,21 +122,24 @@ const App = () => {
     setFilterText(event.target.value)    
     const filtered = countries.filter( countries => countries.name.common.toLowerCase().match(filterText.toLowerCase()) )
     //console.log(filtered)    
-    if(countries.length===1){
-      console.log('one country set lanngs'+countries[0].languages)
-      
-    }else if(event.target.value.length>0 && filtered.length<=10){     
+    if(event.target.value.length>0 && filtered.length<=10){     
       console.log('show filtered')      
       setFilteredCountries( filtered )
       setFilterMessage(' ')
     }else if(filtered.length>0){      
       console.log('else filter change')
       setFilterMessage('Too many matches, please spesify')
-      setFilteredCountries( [] )
-      
-    }    
+      setFilteredCountries( [] )    
+    }
   }
 
+  const handleShowButton = (event) =>{
+    console.log('btnkey in handle '+event.target.value)
+    const selected = countries.find( countries => countries.ccn3===event.target.value)
+    console.log('selected '+selected.name.common)
+    setFilteredCountries( [selected] )
+    setFilterText('')  
+  }
   return(
     <div>
       <Input inputlabel={'Find country'} inputvalue={filterText} handler={handleCountryFilterChange} />
@@ -137,7 +147,7 @@ const App = () => {
       {/*<p>debug ${countries.length}</p>*/}
       <p>debug ${filteredCountries.length}</p>
 
-      <CountriesContent countries={filteredCountries} />
+      <CountriesContent countries={filteredCountries} btnHandler={handleShowButton} />
     </div>
   )
 }
