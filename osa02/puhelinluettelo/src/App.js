@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/personsDbCom'
 
 const Person = ({person}) =>{
   return(
@@ -51,12 +51,15 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
+    personService
+      .getAll()
+      .then( initialPersons => {
         console.log('promise fulfilled')
-        setPersons(response.data)
-        setPersonsFiltered(response.data)
+        setPersons(initialPersons)
+        setPersonsFiltered(initialPersons)
+      })
+      .catch(error =>{
+        console.log('fail on getting Persons from db')
       })
   }, [])
   console.log('render', persons.length, 'persons')
@@ -72,10 +75,15 @@ const App = () => {
       console.log("Exist!")
       window.alert(`${newName} is already added to phonebook`)
     }else{
-      setPersons(persons.concat(personObject))
-      setNewName('') 
-      setNewPhone(' ')
-      setPersonsFiltered( persons.concat(personObject) )   
+      personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('') 
+        setNewPhone(' ')
+        setPersonsFiltered( persons.concat(returnedPerson) ) 
+      })     
+        
     }
   }
   
