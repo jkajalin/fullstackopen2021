@@ -80,8 +80,18 @@ const App = () => {
     }    
     const nameExist= persons.find(person => person.name.toLowerCase() === personObject.name.toLowerCase())
     if( nameExist ){
-      console.log("Exist!")
-      window.alert(`${newName} is already added to phonebook`)
+      console.log("Exist!")      
+      if(window.confirm(`${newName} is already added to phonebook, replace old number with a new one?`)){
+        // Päivitetään puhelinnumero
+        personService
+        .update(nameExist.id, personObject).then( returnedPerson => {
+          setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson ))
+          setPersonsFiltered(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson ))
+        } )
+        .catch(error => {
+          console.log(error)
+        })
+      }
     }else{
       personService
       .create(personObject)
