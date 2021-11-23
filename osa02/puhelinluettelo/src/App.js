@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/personsDbCom'
 
-const Person = ({person}) =>{
+// Palauttaa yksittäisen Person "olion" poistavan napin, id suoraan handlerille
+const DelPersonBtn = ({handler}) => {
+
   return(
-    <li>{person.name} {person.phone}</li>
+    <button onClick={handler}>'delete'</button>
+  )
+}
+
+const Person = ({person, delHandler}) =>{
+  return(
+    <li>{person.name} {person.phone} <DelPersonBtn handler={delHandler}/> </li>
   )
 }
 
@@ -31,11 +39,11 @@ const PersonForm = ({submitfunction,newName,newPhone,handleNameChange,handleNewN
   )
 }
 
-const Persons = ({personsFiltered}) => {
+const Persons = ({personsFiltered, delPerson}) => {
   return(
     <ul>
         {personsFiltered.map(person => 
-            <Person key={person.name} person={person}  />
+            <Person key={person.id} person={person} delHandler={()=>delPerson(person)} />
         )}
     </ul>
   )
@@ -86,6 +94,24 @@ const App = () => {
         
     }
   }
+
+  const delPerson = persontodel =>{
+    if(window.confirm(`Doyou really want to delete ${persontodel.name}?`)){
+      console.log(`log: deleting ${persontodel.id}`)
+    
+      personService.remove(persontodel.id)
+      .then( () =>{
+        setPersons(persons.filter(person => person.id !== persontodel.id ))
+        setPersonsFiltered(persons.filter(person => person.id !== persontodel.id ))      
+      } )
+      .catch(error => {
+        console.log(error)
+        console.log(`maybe failed to delete ${persontodel.id}`)
+      })
+
+    }   
+    
+  }
   
   const handleNameChange = (event) => {    
     setNewName(event.target.value)
@@ -115,7 +141,7 @@ const App = () => {
       <h2>add New</h2>
       <PersonForm submitfunction={addPerson} newName={newName} newPhone={newPhone} handleNameChange={handleNameChange} handleNewNumberChange={handleNewNumberChange} />
       <h2>Numbers</h2>
-      <Persons personsFiltered={personsFiltered} />
+      <Persons personsFiltered={personsFiltered} delPerson={delPerson} />
       
       ---
       <div>debug: {newName}</div>
