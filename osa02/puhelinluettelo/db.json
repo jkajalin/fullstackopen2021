@@ -29,6 +29,11 @@
       "name": "Homer Simpson",
       "phone": "0987654",
       "id": 6
+    },
+    {
+      "name": "Lisa Simpson",
+      "phone": " 0457778684",
+      "id": 7
     }
   ]
 }

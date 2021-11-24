@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/personsDbCom'
+import './style.css'
 
 // Palauttaa yksittäisen Person "olion" poistavan napin, id suoraan handlerille
 const DelPersonBtn = ({handler}) => {
 
   return(
-    <button onClick={handler}>'delete'</button>
+    <button onClick={handler}>delete</button>
   )
 }
 
@@ -49,26 +50,43 @@ const Persons = ({personsFiltered, delPerson}) => {
   )
 }
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="notification">
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [ newName, setNewName ] = useState('')
-  const [ newPhone, setNewPhone ] = useState('')
-  const [ filterText, setFilterText ] = useState('')
-  
-  const [ personsFiltered, setPersonsFiltered] = useState(persons)  
+  const [newName, setNewName ] = useState('')
+  const [newPhone, setNewPhone ] = useState('')
+  const [filterText, setFilterText ] = useState('')
+  const [notification, setNotification] = useState('')
+  const [personsFiltered, setPersonsFiltered] = useState(persons)  
 
   useEffect(() => {
     console.log('effect')
+    // try to hide notification, level clarcson
+    setTimeout(() => {
+      setNotification(null)
+    }, 1)
     personService
       .getAll()
       .then( initialPersons => {
         console.log('promise fulfilled')
         setPersons(initialPersons)
         setPersonsFiltered(initialPersons)
+         
       })
       .catch(error =>{
         console.log('fail on getting Persons from db')
-      })
+      })      
   }, [])
   console.log('render', persons.length, 'persons')
 
@@ -87,6 +105,12 @@ const App = () => {
         .update(nameExist.id, personObject).then( returnedPerson => {
           setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson ))
           setPersonsFiltered(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson ))
+          setNotification(
+            `Number of '${returnedPerson.name}' was succesfully edited`
+          )
+          setTimeout(() => {
+            setNotification(null)
+          }, 3000) 
         } )
         .catch(error => {
           console.log(error)
@@ -99,7 +123,14 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('') 
         setNewPhone(' ')
-        setPersonsFiltered( persons.concat(returnedPerson) ) 
+        setPersonsFiltered( persons.concat(returnedPerson) )
+        setNotification(
+          `Contact '${returnedPerson.name}' was succesfully created`
+        )
+        setTimeout(() => {
+          setNotification(null)
+        }, 3000)      
+       
       })     
         
     }
@@ -112,7 +143,13 @@ const App = () => {
       personService.remove(persontodel.id)
       .then( () =>{
         setPersons(persons.filter(person => person.id !== persontodel.id ))
-        setPersonsFiltered(persons.filter(person => person.id !== persontodel.id ))      
+        setPersonsFiltered(persons.filter(person => person.id !== persontodel.id ))
+        setNotification(
+          `Person '${persontodel.name}' was succesfully removed from server`
+        )
+        setTimeout(() => {
+          setNotification(null)
+        }, 3000)      
       } )
       .catch(error => {
         console.log(error)
@@ -146,7 +183,8 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2> 
+      <h2>Phonebook</h2>
+      <Notification message={notification} /> 
       <Input inputlabel={'Filter numbers:'} inputvalue={filterText} handler={handleFilterChange} />
       <h2>add New</h2>
       <PersonForm submitfunction={addPerson} newName={newName} newPhone={newPhone} handleNameChange={handleNameChange} handleNewNumberChange={handleNewNumberChange} />
