@@ -62,20 +62,36 @@ const Notification = ({ message }) => {
   )
 }
 
+const ErrorMsg = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName ] = useState('')
   const [newPhone, setNewPhone ] = useState('')
   const [filterText, setFilterText ] = useState('')
   const [notification, setNotification] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
   const [personsFiltered, setPersonsFiltered] = useState(persons)  
 
   useEffect(() => {
     console.log('effect')
     // try to hide notification, level clarcson
+    //setNotification(null)
+    //setErrorMsg(null)    
     setTimeout(() => {
       setNotification(null)
+      setErrorMsg(null)
     }, 1)
+    
     personService
       .getAll()
       .then( initialPersons => {
@@ -113,7 +129,16 @@ const App = () => {
           }, 3000) 
         } )
         .catch(error => {
+          setPersons(persons.filter(person => person.id !== nameExist.id ))
+          setPersonsFiltered(persons.filter(person => person.id !== nameExist.id ))
           console.log(error)
+          setErrorMsg(
+            `Note '${nameExist.name}' was already removed from server`
+          )
+          setTimeout(() => {
+            setErrorMsg(null)
+          }, 3000) 
+        
         })
       }
     }else{
@@ -184,7 +209,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notification} /> 
+      <Notification message={notification} />
+      <ErrorMsg message={errorMsg} />
       <Input inputlabel={'Filter numbers:'} inputvalue={filterText} handler={handleFilterChange} />
       <h2>add New</h2>
       <PersonForm submitfunction={addPerson} newName={newName} newPhone={newPhone} handleNameChange={handleNameChange} handleNewNumberChange={handleNewNumberChange} />
