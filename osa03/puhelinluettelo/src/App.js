@@ -151,11 +151,17 @@ const App = () => {
         setPersonsFiltered( persons.concat(returnedPerson) )
         setNotification(
           `Contact '${returnedPerson.name}' was succesfully created`
-        )
+        )        
         setTimeout(() => {
           setNotification(null)
         }, 3000)      
        
+      }).catch( error => {
+        console.log(error.response.data)
+        setErrorMsg( JSON.stringify(error.response.data) )
+        setTimeout(() => {
+          setErrorMsg(null)
+        }, 3000) 
       })     
         
     }
