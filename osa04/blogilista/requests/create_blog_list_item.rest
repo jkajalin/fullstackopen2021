@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "VS Code REST client test content 2",
+    "author": "JK",
+    "url": "foo-url",
+    "likes": 2
+}
