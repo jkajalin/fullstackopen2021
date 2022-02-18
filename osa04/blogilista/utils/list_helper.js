@@ -9,6 +9,18 @@ const totalLikes = (blogs) => {
   return total
 }
 
+const favouriteBlog = (blogs) => {
+  var mostlikedItem = blogs.reduce((previousItem, blogitem) => {
+    let mostLiked = previousItem
+    if( blogitem.likes >= mostLiked.likes){
+      mostLiked=blogitem
+    }
+    return mostLiked
+  })
+  console.log(mostlikedItem)
+  return mostlikedItem
+}
+
 module.exports = {
-  dummy, totalLikes
+  dummy, totalLikes, favouriteBlog
 }
