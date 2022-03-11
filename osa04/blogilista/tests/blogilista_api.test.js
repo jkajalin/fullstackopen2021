@@ -1,13 +1,14 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 const testHelper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blogilista-model')
+const User = require('../models/user')
 
 
-
-describe('There is initially some blogs saved', () => {
+describe.skip('There is initially some blogs saved', () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(testHelper.initialBlogs)
@@ -129,6 +130,60 @@ describe('There is initially some blogs saved', () => {
       const blogsAtEnd = await testHelper.blogsInDb()
       expect(blogsAtEnd[0].likes).toBe(8)
     })
+  })
+})
+// Testing User related stuff
+describe('When there is initially one user at db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('verysekret', 10)
+    const user = new User({ kayttajanimi: 'root', passwordHash })
+
+    await user.save()
+  })
+
+  test('Creation succeeds with a fresh username', async () => {
+    const usersAtStart = await testHelper.usersInDb()
+
+    const newUser = {
+      kayttajanimi: 'mluukkai',
+      nimi: 'Matti Luukkainen',
+      salasana: 'salainen',
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await testHelper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.kayttajanimi)
+    expect(usernames).toContain(newUser.kayttajanimi)
+  })
+
+  test('Creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await testHelper.usersInDb()
+
+    const newUser = {
+      kayttajanimi: 'root',
+      nimi: 'Superuser',
+      salasana: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('Username must be unique and at least 3 characters')
+
+    const usersAtEnd = await testHelper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
 })
 

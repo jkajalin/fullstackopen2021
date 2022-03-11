@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization:  bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imp1c3NpayIsImlkIjoiNjIyOWRkYTgwNmNkMGY2YzJhZDM3MGYxIiwiaWF0IjoxNjQ3MDE2NjA0LCJleHAiOjE2NDcwMjAyMDR9.HSEf1I8goutc75Xmv7DNhfoYKHxdkU6CFUEquYC6KmI
 
 {
-    
+    "title": "Nyt olis token extraktio eristetty middlewareksi",
     "author": "JK",
-    
-    "likes": 2
+    "url": "longlonglong-foo-url",
+    "likes": 0
 }
