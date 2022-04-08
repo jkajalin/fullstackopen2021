@@ -13,9 +13,9 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-const create = async newObject =>{
+const create = async newObject => {
   const config = {
-    headers: { Authorization: tokenBearer},
+    headers: { Authorization: tokenBearer },
   }
 
   const response = await axios.post(baseUrl, newObject, config)
@@ -27,9 +27,9 @@ const update = async (id, newObject) => {
   return request.data
 }
 
-const remove = async(id) => {
+const remove = async (id) => {
   const config = {
-    headers: { Authorization: tokenBearer},
+    headers: { Authorization: tokenBearer },
   }
 
   const response = await axios.delete(`${baseUrl}/${id}`, config)
