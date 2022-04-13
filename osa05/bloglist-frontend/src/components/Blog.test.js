@@ -79,4 +79,13 @@ describe('<Blog />', () => {
     expect(div).not.toHaveStyle('display: none')
   })
 
+  test('Kun like-nappia painetaan kahdesti, komponentin propsina saamaa tapahtumankäsittelijäfunktiota kutsutaan kaksi kertaa', () => {
+
+    const button = screen.getByText('Like')
+    userEvent.click(button)
+    userEvent.click(button)
+
+    expect(mockHandleLike.mock.calls).toHaveLength(2)
+  })
+
 })
