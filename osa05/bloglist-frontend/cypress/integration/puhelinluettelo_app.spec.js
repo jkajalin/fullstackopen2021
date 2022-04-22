@@ -66,14 +66,30 @@ describe('Blog app', function() {
 
       it('one of those can be liked', function () {
         cy.contains('second blog').click()
-        cy.contains('Like')
+        cy.contains('second blog').parent().contains('Like').click()
+        cy.contains('second blog').parent().contains('Likes: 3')
+      })
+      it('blogs are in order by likes', function(){
+        // initial order by likes
+        cy.get('.blog:first').contains('third blog')
+        cy.get('.blog:last').contains('Another blog')
+        // cliking like buttons
+        cy.contains('second blog').click() // Toggle
+        cy.contains('second blog').parent().contains('Like').as('secondBtn')
+        cy.get('@secondBtn').click() // Third like
+        cy.get('@secondBtn').click() // Fourth like
+        cy.contains('Another blog').click() // Toggle
+        cy.contains('Another blog').parent().contains('Like').click() // First like
+        // "second blog" appearing first and "Another blog" last is enought to prove that blogs are sorted by likes
+        cy.get('.blog:first').contains('second blog').parent().contains('Likes: 4')
+        cy.get('.blog:last').contains('Another blog').parent().contains('Likes: 1')
       })
     })
   })
-  describe.only('Deleting blog', function () {
+  describe('Deleting blog', function () {
     beforeEach(function () {
       cy.login({ kayttajanimi: 'mluukkai', salasana: 'salainen' })
-      cy.createBlog({ title: 'one to delete', author: 'JK', url: 'longlong-foo-foo-url1', likes: 0 })
+      cy.createBlog({ title: 'one to delete', author: 'Cypress: mluukkai', url: 'longlong-foo-foo-url1', likes: 0 })
     })
 
     it('Succeed with user that created blog item ', function () {
@@ -83,6 +99,7 @@ describe('Blog app', function() {
 
     it('Fails with wrong user', function () {
       cy.login({ kayttajanimi: 'jussik', salasana: 'salainen' })
+      cy.createBlog({ title: 'second blog', author: 'JK', url: 'longlong-foo-foo-url2', likes: 2 })
       cy.contains('Jussi Kajalin is logged in')
       cy.contains('one to delete').click()
       cy.contains('one to delete').should('not.contain', 'Delete')

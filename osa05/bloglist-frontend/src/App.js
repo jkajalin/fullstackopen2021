@@ -41,10 +41,14 @@ const App = () => {
   const blogFormRef = useRef()
 
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
+  useEffect( async () => {
+    sortByLikes( await blogService.getAll() )
+    //setBlogs(blogs.sort((firstItem, secondItem) => firstItem.likes < secondItem.likes))
+    /*
+      blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((firstItem, secondItem) => firstItem.likes < secondItem.likes))
     )
+    */
   }, [])
 
   useEffect(() => {
@@ -59,9 +63,21 @@ const App = () => {
 
   // Sort blogs by likes
   const sortByLikes = (sblogs) => {
-    console.log('sort by likes')
-    const sorted = sblogs.sort((firstItem, secondItem) => firstItem.likes < secondItem.likes)
-    setBlogs(sorted)
+    //console.log('sort by likes')
+    //const sorted = sblogs.sort((firstItem, secondItem) => { firstItem.likes < secondItem.likes} )
+    /*
+    console.log(sblogs.sort((firstItem, secondItem) => {
+      if (firstItem.likes > secondItem.likes) return 1
+      if (firstItem.likes === secondItem.likesb) return 0
+      if (firstItem.likes < secondItem.likes) return -1
+
+    } ))
+    */
+    setBlogs( sblogs.sort((firstItem, secondItem) => {
+      if (firstItem.likes < secondItem.likes) return 1
+      if (firstItem.likes === secondItem.likesb) return 0
+      if (firstItem.likes > secondItem.likes) return -1
+    }))
   }
 
   const handleLogin = async (event) => {
