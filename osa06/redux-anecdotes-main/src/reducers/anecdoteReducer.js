@@ -1,3 +1,5 @@
+import { createSlice } from '@reduxjs/toolkit'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -17,6 +19,7 @@ const asObject = (anecdote) => {
   }
 }
 
+/*
 export const voteFor = (id) => { 
   return {
     type: 'VOTE',
@@ -34,7 +37,7 @@ export const createAnecdote = (content) => {
     }
   }
 }
-
+*/
 // Sort anecdotes by votes
 const sortByVotes = ( toSort ) => {
   toSort.sort( (firstItem, secondItem) => {
@@ -46,7 +49,7 @@ const sortByVotes = ( toSort ) => {
 }
 
 const initialState = anecdotesAtStart.map(asObject)
-
+/*
 const reducer = (state = initialState, action) => {
   console.log('state now: ', state)
   console.log('action', action)
@@ -70,5 +73,32 @@ const reducer = (state = initialState, action) => {
     return state
   }
 }
+*/
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    createAnecdote(state, action) {
+      const content = action.payload
+      state.push({
+        content,
+        id: getId(),
+        votes: 0,
+      })
+    },
+    voteFor(state, action){
+      const id = action.payload
+      const anecdoteToVote = state.find(n => n.id === id)
+      const votedAnecdote = { 
+        ...anecdoteToVote, 
+        votes: anecdoteToVote.votes+1 
+      }
+      const mappedAnecdotes = state.map(anecdote => anecdote.id !== id ? anecdote : votedAnecdote )
+      sortByVotes(mappedAnecdotes) // sorting only here works until database, actions or more functions added. Sorting can be implemented as action.
+      return mappedAnecdotes
+    }
+  }
+})
 
-export default reducer
+export const { createAnecdote, voteFor } = anecdoteSlice.actions
+export default anecdoteSlice.reducer
