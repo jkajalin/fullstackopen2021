@@ -1,30 +1,18 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { addVote } from '../reducers/anecdoteReducer'
-import { clearNotification, setNotification } from '../reducers/notificationReducer'
+import { setNotification } from '../reducers/notificationReducer'
 import Filter from './Filter'
 
 
 const Anecdote = ( { dote } ) => {  
   const dispatch = useDispatch()
   
-  const vote = (dote) => {
+  const vote = async (dote) => {
     console.log('vote for id:', dote.id)
     dispatch(addVote(dote))
-    dispatch(setNotification( `+1 vote for: ${dote.content}`))
-    setTimeout(() => {
-      dispatch( clearNotification() )
-    }, 5000)
+    dispatch(setNotification( `+1 vote for: ${dote.content}`, 5))    
   }
-  /*
-  const vote = (id) => {
-    console.log('vote for id:', id)
-    dispatch(voteFor(id))
-    dispatch(setNotification( `+1 vote for: ${dote.content}`))
-    setTimeout(() => {
-      dispatch( clearNotification() )
-    }, 5000)
-  }  
-  */
+  
   return(
     <div>
       {dote.content} -

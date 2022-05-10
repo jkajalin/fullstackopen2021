@@ -21,25 +21,7 @@ const asObject = (anecdote) => {
   }
 }
 */
-/*
-export const voteFor = (id) => { 
-  return {
-    type: 'VOTE',
-    data: { id }
-  }
-}
 
-export const createAnecdote = (content) => { 
-  return {
-    type: 'NEW_ANECDOTE',
-    data: {
-      content,
-      id: getId(),
-      votes: 0
-    }
-  }
-}
-*/
 // Sort anecdotes by votes
 const sortByVotes = ( toSort ) => {
   toSort.sort( (firstItem, secondItem) => {
@@ -51,31 +33,7 @@ const sortByVotes = ( toSort ) => {
 }
 
 //const initialState = anecdotesAtStart.map(asObject)
-/*
-const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', action)
 
-  switch (action.type) {
-    case 'VOTE':
-      const id = action.data.id
-      const anecdoteToVote = state.find(n => n.id === id)
-      const votedAnecdote = { 
-        ...anecdoteToVote, 
-        votes: anecdoteToVote.votes+1 
-      }
-      const mappedAnecdotes = state.map(anecdote => anecdote.id !== id ? anecdote : votedAnecdote )
-      sortByVotes(mappedAnecdotes) // sorting only here works until database, actions or more functions added. Sorting can be implemented as action.
-      return mappedAnecdotes
-    case 'NEW_ANECDOTE':
-      return [...state, action.data]
-    case 'ZERO':
-      return initialState
-    default: // jos ei mikään ylläolevista tullaan tänne
-    return state
-  }
-}
-*/
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
   initialState: [],
