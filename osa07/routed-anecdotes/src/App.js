@@ -2,7 +2,9 @@ import { useState } from 'react'
 import {
   Routes, Route, Link, useMatch, useNavigate
 } from "react-router-dom"
+import  { useField } from './hooks'
 import Notification from './components/Notification'
+
 
 const Menu = () => {
   const padding = {
@@ -62,42 +64,60 @@ const Footer = () => (
   </div>
 )
 
-const CreateNew = (props) => {
+const CreateNew = ( props ) => {
+  /*
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
+  */
+  const contentF = useField('text')
+  const { resetValue: resetContent , ...content} = contentF
+  const authorF = useField('text')
+  const { resetValue: resetAuthor , ...author} = authorF
+  const infoF = useField('text')
+  const { resetValue: resetInfo , ...info} = infoF
   const navigate = useNavigate()
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e) => {    
     e.preventDefault()
+    
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     navigate('/')    
   }
+  
+  const resetFields = () => {
+    console.log('reset')
+    resetContent()
+    resetAuthor()
+    resetInfo()    
+  }
+  
 
   return (
     <div>      
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form id='anecdote-form' onSubmit={handleSubmit}>        
         <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          content: 
+          <input {...content} />
         </div>
         <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          author: 
+          <input {...author} />
         </div>
         <div>
-          url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          url for more info: 
+          <input {...info} />
         </div>
+        {/*<div>Debug: {content.value}, {author.value}, {info.value} </div>*/}
         <button>create</button>
-      </form>
+      </form><button onClick={ ()=> resetFields() }>reset</button>
     </div>
   )
 
@@ -134,10 +154,10 @@ const App = () => {
     timoutID = setTimeout( () => setNotification(''), 5000)
     //console.log(notification)
   }
+  /*
+  const anecdoteById = (id) => anecdotes.find(a => a.id === id)
 
-  const anecdoteById = (id) =>
-    anecdotes.find(a => a.id === id)
-
+  
   const vote = (id) => {
     const anecdote = anecdoteById(id)
 
@@ -148,6 +168,7 @@ const App = () => {
 
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
+  */
 
   const match = useMatch('/anecdotes/:id')
   const anecdote = match 
