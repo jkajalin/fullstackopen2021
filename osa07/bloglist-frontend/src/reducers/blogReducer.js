@@ -42,7 +42,9 @@ const blogSlice = createSlice({
       state.push(action.payload)
     },
     setBlogs(state, action) {
-      return action.payload
+      const toSort = action.payload
+      sortByLikes(toSort) // makes state consistent, in order by likes 
+      return toSort
     },
     removeBlog(state, action) {
       const id = action.payload
@@ -60,9 +62,9 @@ export const initializeBlogs = () => {
   return async dispatch => {
     const blogs = await blogService.getAll()
 
-    sortByLikes(blogs)
+    //sortByLikes(blogs) moved inside setBlogs
     dispatch(setBlogs(blogs))
-
+    console.log('blogs initialized')
     //dispatch(sortByLikes(blogs))
   }
 }
@@ -71,6 +73,7 @@ export const createBlog = blogObject => {
   return async dispatch => {
     const newBlog = await blogService.create(blogObject)
     dispatch(appendBlog(newBlog))
+    //dispatch(initializeBlogs()) // force initialize to get all creator data from db
   }
 }
 
@@ -88,9 +91,12 @@ export const addLikeTo = blogobject => {
 
 export const deleteBLog = id => {
   return async dispatch => {
-
-    await blogService.remove(id)
-    dispatch(removeBlog(id))
+    try {
+      await blogService.remove(id)
+      dispatch(removeBlog(id))
+    } catch (error) {
+      console.log(error) // expired sessiot paremmin näkyville tällä?
+    }
   }
 }
 

@@ -50,11 +50,13 @@ const Blog = ({ blog, u }) => {
         dispatch(createNotification(`${blog.title} deleted succsesfully`, 5))
 
       } catch (error) {
+        // expired sessioita ei täältä näe
         console.log(error);
         dispatch(createErrorMsg("Maybe blog is not created by this user", 5))
       }
     }
   }
+
 
   return (
     <div style={blogStyle} className="blog">
@@ -73,10 +75,11 @@ const Blog = ({ blog, u }) => {
          User id based solution would be better
 
          // u is logged in user object, does not have id data, needed to show delete blog button
-         // solution could be to force updating whole bloglist from database or getting id of logged user by u.nimi
+         // solution could be to force updating whole bloglist from database or getting id of logged user by u.nimi from database 
+         // feature from assignment 7.14 bring needed information (getting id of logged user by u.nimi from database)
       */}
 
-        {blog.user && blog.user.nimi === u.nimi ? (
+        {blog.user && blog.user.nimi === u.nimi || blog.user === u.id ? (
           <>
             {/*<button onClick={() => handleDel(blog)}>Delete</button>*/}
             <button onClick={handleDelete}>Delete</button>

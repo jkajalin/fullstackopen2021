@@ -12,7 +12,7 @@ const BlogList = ({ user }) => {
 
   //const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
-
+  //const users = useSelector(state => state.users)
   /*
   const handleLikeButton = async (blogObject) => {
         
@@ -36,7 +36,7 @@ const BlogList = ({ user }) => {
     }
   }
   */
-
+  console.log('u.id: ', user.id) // debug stuff for Blog component
   return (
     <>
       <h2>BlogList</h2>
