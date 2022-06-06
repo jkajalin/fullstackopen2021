@@ -36,7 +36,8 @@ const BlogList = ({ user }) => {
     }
   }
   */
-  console.log('u.id: ', user.id) // debug stuff for Blog component
+
+  //console.log('u.id: ', user.id) // debug stuff for Blog component
   return (
     <>
       <h2>BlogList</h2>

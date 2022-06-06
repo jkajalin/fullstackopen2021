@@ -9,6 +9,8 @@ import errorMsgReducer from "./reducers/errorMsgReducer";
 import loginReducer from "./reducers/loginReducer";
 import userReducer from "./reducers/userReducer";
 
+import { BrowserRouter as Router } from "react-router-dom";
+
 const store = configureStore({
   reducer: {
     notification: notificationReducer,
@@ -19,4 +21,11 @@ const store = configureStore({
   }
 })
 
-ReactDOM.render(<React.StrictMode><Provider store={store}><App /></Provider> </React.StrictMode>, document.getElementById("root"));
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <Router><App /></Router>
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById("root")
+);

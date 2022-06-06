@@ -1,27 +1,30 @@
 import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from 'react-redux'
-//import { useDispatch } from 'react-redux'
-//import Blog from "./components/Blog";
 import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
-//import { createBlog, initializeBlogs, setBlogs, sortByLikes } from "./reducers/blogReducer";
-//import { createBlog, initializeBlogs } from "./reducers/blogReducer";
+
 import { initializeBlogs } from "./reducers/blogReducer";
 import { initializeUsers } from "./reducers/userReducer";
 
-//import blogService from "./services/blogs";
 import loginService from "./services/login";
 import "./style.css";
 import Notification from "./components/Notification";
 import ErrorMsg from "./components/ErrorMsg";
-//import { createNotification } from "./reducers/notificationReducer";
+
 import { createErrorMsg } from "./reducers/errorMsgReducer";
 
 import BlogList from "./components/BlogList";
 import { initLogin, setLogin, setUserId } from "./reducers/loginReducer";
 import UserList from "./components/UserList";
 
+import { Routes, Route, Link, useMatch } from "react-router-dom";
+import UserView from "./components/UserView";
+
 const App = () => {
+  const padding = {
+    padding: 5
+  }
+
   const dispatch = useDispatch()
 
   const [username, setUsername] = useState("");
@@ -34,13 +37,11 @@ const App = () => {
   const blogFormRef = useRef();
 
   useEffect(async () => {
-    //sortByLikes(await blogService.getAll());
-    dispatch(initializeBlogs())
 
+    dispatch(initializeBlogs())
     //dispatch(initializeUsers())
 
-
-  }, []) //maybe  [dispatch] ?
+  }, [])
 
   useEffect(async () => {
 
@@ -177,32 +178,67 @@ const App = () => {
   );
 
   const blogListView = () => (
-    <>
-      <h2>blogs</h2>
-      {user.nimi} is logged in
-      <br />
-      <button onClick={handleLogout}>logout</button>
-      <br />
-      <br />
 
-      <BlogList user={user} />
-      <br />
-    </>
+    <><BlogList user={user} /><br /></>
   );
+
+  const Home = () => {
+    //
+    return (
+      <>
+        <>{blogListView()}</>
+        <>{blogForm()}</>
+      </>
+    )
+  }
+  const Users = () => {
+    //
+    return (
+
+      <UserList />
+    )
+  }
+
+  const userMatch = useMatch('/users/:id')
+  const theUser = userMatch
+    ? users.find(user => user.id === String(userMatch.params.id))
+    : null
 
   return (
     <div>
+
+      {user
+        ? <>
+          <Link style={padding} to="/">home</Link>
+          <Link style={padding} to="/users">users</Link>
+        </>
+        : 'login'
+      }
       <Notification />
       <ErrorMsg />
+
       {user === null ? (
         loginForm()
       ) : (
         <>
-          {blogListView()}
-          {blogForm()}
-          <UserList />
+          <h2>Blogs</h2>
+          {user.nimi} is logged in
+          <br />
+          <button onClick={handleLogout}>logout</button>
+          <br />
+          <br />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/users" element={<Users />} />
+            <Route path="/users/:id" element={<UserView user={theUser} />} />
+          </Routes>
+
+
         </>
       )}
+
+
+
     </div>
   );
 };
