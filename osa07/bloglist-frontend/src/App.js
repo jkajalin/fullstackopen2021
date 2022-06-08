@@ -1,24 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from 'react-redux'
-import BlogForm from "./components/BlogForm";
-import Togglable from "./components/Togglable";
+import BlogForm from "./components/BlogForm"
+import Togglable from "./components/Togglable"
 
-import { initializeBlogs } from "./reducers/blogReducer";
-import { initializeUsers } from "./reducers/userReducer";
+import { initializeBlogs } from "./reducers/blogReducer"
+import { initializeUsers } from "./reducers/userReducer"
 
-import loginService from "./services/login";
+import loginService from "./services/login"
 import "./style.css";
-import Notification from "./components/Notification";
-import ErrorMsg from "./components/ErrorMsg";
+import Notification from "./components/Notification"
+import ErrorMsg from "./components/ErrorMsg"
 
-import { createErrorMsg } from "./reducers/errorMsgReducer";
+import { createErrorMsg } from "./reducers/errorMsgReducer"
 
-import BlogList from "./components/BlogList";
-import { initLogin, setLogin, setUserId } from "./reducers/loginReducer";
-import UserList from "./components/UserList";
+import BlogList from "./components/BlogList"
+import { initLogin, setLogin, setUserId } from "./reducers/loginReducer"
+import UserList from "./components/UserList"
 
-import { Routes, Route, Link, useMatch } from "react-router-dom";
-import UserView from "./components/UserView";
+import { Routes, Route, Link, useMatch } from "react-router-dom"
+import UserView from "./components/UserView"
+import BlogView from "./components/BlogView"
 
 const App = () => {
   const padding = {
@@ -27,8 +28,8 @@ const App = () => {
 
   const dispatch = useDispatch()
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
   //const [user, setUser] = useState(null);
   const user = useSelector(state => state.login)
   const blogs = useSelector(state => state.blogs)
@@ -44,8 +45,10 @@ const App = () => {
   }, [])
 
   useEffect(async () => {
-
-    dispatch(initializeUsers())
+    if (blogs.length > 0) {
+      dispatch(initializeUsers())
+    }
+    //dispatch(initializeUsers())
     //console.log(blogs.length)
   }, [blogs.length]) // UserList uudelleen renderöinti, blogien määrän muuttuessa
 
@@ -199,7 +202,14 @@ const App = () => {
     )
   }
 
+  const blogMatch = useMatch('/blogs/:id')
+
+  const theBlog = blogMatch
+    ? blogs.find(blog => blog.id === String(blogMatch.params.id))
+    : null
+
   const userMatch = useMatch('/users/:id')
+
   const theUser = userMatch
     ? users.find(user => user.id === String(userMatch.params.id))
     : null
@@ -209,8 +219,9 @@ const App = () => {
 
       {user
         ? <>
-          <Link style={padding} to="/">home</Link>
+          <Link style={padding} to="/">blogs</Link>
           <Link style={padding} to="/users">users</Link>
+          | {user.nimi} is logged in  <button onClick={handleLogout}>logout</button>
         </>
         : 'login'
       }
@@ -222,15 +233,11 @@ const App = () => {
       ) : (
         <>
           <h2>Blogs</h2>
-          {user.nimi} is logged in
-          <br />
-          <button onClick={handleLogout}>logout</button>
-          <br />
-          <br />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/users" element={<Users />} />
             <Route path="/users/:id" element={<UserView user={theUser} />} />
+            <Route path="/blogs/:id" element={<BlogView blog={theBlog} />} />
           </Routes>
 
 
@@ -243,4 +250,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App

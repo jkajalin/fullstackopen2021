@@ -1,23 +1,15 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
+import PropTypes from "prop-types"
 import { addLikeTo, deleteBLog } from "../reducers/blogReducer"
-import { useDispatch } from 'react-redux'
-//import blogService from '../services/blogs'
+import { useDispatch, useSelector } from 'react-redux'
 import { createNotification } from "../reducers/notificationReducer"
 import { createErrorMsg } from "../reducers/errorMsgReducer"
-import { Link } from 'react-router-dom'
+import CommentForm from "./CommentForm"
+//import { Link } from 'react-router-dom'
 
-// u is logged in user object, (does not have id data), needed to show delete blog button
-const Blog = ({ blog, u }) => {
+
+const SingleBlog = ({ blog }) => {
+  const u = useSelector(state => state.login) // u is logged in user object
   const dispatch = useDispatch()
-  const [visible, setVisible] = useState(false);
-  //const [blogLikes, setBlogLikes] = useState(blog.likes);
-
-  const showWhenVisible = { display: visible ? "" : "none" };
-
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
 
   const blogStyle = {
     lineHeight: "1.5em",
@@ -58,19 +50,19 @@ const Blog = ({ blog, u }) => {
     }
   }
 
-
+  console.log('comment count', blog.comments.length)
   return (
     <div style={blogStyle} className="blog">
-      <div onClick={toggleVisibility}>
-        {/*{blog.title} - {blog.author}*/}
-        <Link to={`/blogs/${blog.id}`}>{blog.title} - {blog.author}</Link>
-      </div>
 
-      <div style={showWhenVisible} className="togglableContent">
-        {/*Likes: {blogLikes} <button onClick={addLike}>Like</button>*/}
+      <h2>{blog.title} - {blog.author}</h2>
+
+      <div>
+
         Likes: {blog.likes} <button onClick={addLike}>Like</button>
         <br />
-        URL: {blog.url}
+        URL: <a href={blog.url} >{blog.url}</a>
+        <br />
+        Added by {blog.user.nimi}
         <br />
         {/* Show delete button when blog.user exist and nimi equals blog.user.nimi === u.nimi
          Solution will work until user nimi is changed, if this functionality will be added later.
@@ -90,14 +82,27 @@ const Blog = ({ blog, u }) => {
           <> </>
         )}
       </div>
+      <div>
+        <h3>Comments:</h3>
+        {blog.comments && blog.comments.length > 0 ? (
+          <>
+            <ul>
+              {blog.comments.map(comment => <li key={comment}>{comment}</li>)}
+            </ul>
+          </>
+        ) : (
+          <> no Comments</>
+        )}
+        <CommentForm blog={blog} />
+      </div>
     </div>
   );
 };
 
-Blog.propTypes = {
+SingleBlog.propTypes = {
   //handleLike: PropTypes.func.isRequired,
   //handleDel: PropTypes.func.isRequired,
   blog: PropTypes.object.isRequired,
 };
 
-export default Blog;
+export default SingleBlog

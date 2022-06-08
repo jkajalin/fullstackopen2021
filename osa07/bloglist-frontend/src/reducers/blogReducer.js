@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
+import { createErrorMsg } from "../reducers/errorMsgReducer"
 
 // Sort blogs by likes
 export const sortByLikes = (sblogs) => {
@@ -52,11 +53,16 @@ const blogSlice = createSlice({
       const filtered = state.filter(n => n.id !== id)
 
       return filtered
-    }
+    },
+    commentBlog(state, action) {
+      const commentedBlog = action.payload
+      const mappedBlogs = state.map(blog => blog.id !== commentedBlog.id ? blog : commentedBlog)
+      return mappedBlogs
+    },
   }
 })
 
-export const { likeBlog, appendBlog, setBlogs, removeBlog } = blogSlice.actions
+export const { likeBlog, appendBlog, setBlogs, removeBlog, commentBlog } = blogSlice.actions
 
 export const initializeBlogs = () => {
   return async dispatch => {
@@ -71,13 +77,20 @@ export const initializeBlogs = () => {
 
 export const createBlog = blogObject => {
   return async dispatch => {
-    const newBlog = await blogService.create(blogObject)
-    dispatch(appendBlog(newBlog))
+    try {
+      const newBlog = await blogService.create(blogObject)
+      dispatch(appendBlog(newBlog))
+    } catch (error) {
+      console.log(error) // expired sessiot paremmin näkyville tällä?
+      console.log('expired session, try to login again?')
+      dispatch(createErrorMsg("Creating new comment failed. Expired session? Try to login again", 5))
+    }
+
     //dispatch(initializeBlogs()) // force initialize to get all creator data from db
   }
 }
 
-// Object vai ID ? object blog servicelle id tälle reducerille likeBlog(id)
+// Object vai ID ? object blog servicelle, id tälle reducerille likeBlog(id)
 export const addLikeTo = blogobject => {
   return async dispatch => {
     const likedobject = {
@@ -89,6 +102,15 @@ export const addLikeTo = blogobject => {
   }
 }
 
+// blogobject is blog object with new comments
+export const addCommentTo = blogobject => {
+  return async dispatch => {
+
+    await blogService.addComment(blogobject.id, blogobject)
+    dispatch(commentBlog(blogobject))
+  }
+}
+
 export const deleteBLog = id => {
   return async dispatch => {
     try {
@@ -96,6 +118,7 @@ export const deleteBLog = id => {
       dispatch(removeBlog(id))
     } catch (error) {
       console.log(error) // expired sessiot paremmin näkyville tällä?
+      console.log('expired session, try to login again?')
     }
   }
 }

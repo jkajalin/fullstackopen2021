@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs/62306bcbd5ea08c257241ce6/comments
+Content-Type: application/json
+
+{
+    "title": "Nyt olis user extraktio eristetty middlewareksi",
+    "author": "JK",
+    "url": "longlong-foo-foo-url",
+    "likes": 5,
+    "comments": ["awesome", "2 awesome", "sic awesome", , "awesome comment"]
+}
