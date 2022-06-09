@@ -18,7 +18,7 @@ const Blog = ({ blog, u }) => {
   const toggleVisibility = () => {
     setVisible(!visible);
   };
-
+  /*
   const blogStyle = {
     lineHeight: "1.5em",
     paddingTop: 10,
@@ -27,7 +27,7 @@ const Blog = ({ blog, u }) => {
     borderWidth: 1,
     marginBottom: 5,
   };
-
+  */
   const addLike = (event) => {
     event.preventDefault()
 
@@ -60,7 +60,7 @@ const Blog = ({ blog, u }) => {
 
 
   return (
-    <div style={blogStyle} className="blog">
+    <>
       <div onClick={toggleVisibility}>
         {/*{blog.title} - {blog.author}*/}
         <Link to={`/blogs/${blog.id}`}>{blog.title} - {blog.author}</Link>
@@ -90,7 +90,7 @@ const Blog = ({ blog, u }) => {
           <> </>
         )}
       </div>
-    </div>
+    </>
   );
 };
 

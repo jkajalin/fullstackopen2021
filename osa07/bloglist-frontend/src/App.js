@@ -21,6 +21,8 @@ import { Routes, Route, Link, useMatch } from "react-router-dom"
 import UserView from "./components/UserView"
 import BlogView from "./components/BlogView"
 
+import { Form, Button, Navbar, Nav } from 'react-bootstrap'
+
 const App = () => {
   const padding = {
     padding: 5
@@ -140,31 +142,30 @@ const App = () => {
   }
   */
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        Username
-        <input
+    <Form onSubmit={handleLogin}>
+      <Form.Group>
+
+        <Form.Label>Username</Form.Label>
+        <Form.Control
           type="text"
           value={username}
           name="Username"
           onChange={({ target }) => setUsername(target.value)}
           id="usrn"
         />
-      </div>
-      <div>
-        Password
-        <input
+        <Form.Label>Password</Form.Label>
+        <Form.Control
           type="password"
           value={password}
           name="Password"
           onChange={({ target }) => setPassword(target.value)}
           id="pswd"
         />
-      </div>
-      <button type="submit" id="login-btn">
-        Login
-      </button>
-    </form>
+        <Button variant="primary" type="submit" id="login-btn">
+          Login
+        </Button>
+      </Form.Group>
+    </Form>
   );
 
   const toggleBlogItem = () => {
@@ -191,6 +192,7 @@ const App = () => {
       <>
         <>{blogListView()}</>
         <>{blogForm()}</>
+        <br />
       </>
     )
   }
@@ -215,15 +217,31 @@ const App = () => {
     : null
 
   return (
-    <div>
+    <div className="container">
 
       {user
         ? <>
-          <Link style={padding} to="/">blogs</Link>
-          <Link style={padding} to="/users">users</Link>
-          | {user.nimi} is logged in  <button onClick={handleLogout}>logout</button>
+          <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+              <Nav className="mr-auto">
+                <Nav.Link href="#" as="span">
+                  <Link style={padding} to="/">blogs</Link>
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  <Link style={padding} to="/users">users</Link>
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  {user.nimi} is logged in
+                </Nav.Link>
+                <Nav.Link href="#" as="span">
+                  <button onClick={handleLogout} >logout</button>
+                </Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Navbar>
         </>
-        : 'login'
+        : <h2>Login</h2>
       }
       <Notification />
       <ErrorMsg />
@@ -247,7 +265,7 @@ const App = () => {
 
 
     </div>
-  );
-};
+  )
+}
 
 export default App

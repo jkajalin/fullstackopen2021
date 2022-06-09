@@ -15,10 +15,8 @@ const SingleBlog = ({ blog }) => {
     lineHeight: "1.5em",
     paddingTop: 10,
     paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
   const addLike = (event) => {
     event.preventDefault()
@@ -50,11 +48,11 @@ const SingleBlog = ({ blog }) => {
     }
   }
 
-  console.log('comment count', blog.comments.length)
+  //console.log('comment count', blog.comments.length)
   return (
     <div style={blogStyle} className="blog">
 
-      <h2>{blog.title} - {blog.author}</h2>
+      <h3>{blog.title} - {blog.author}</h3>
 
       <div>
 
@@ -81,9 +79,10 @@ const SingleBlog = ({ blog }) => {
         ) : (
           <> </>
         )}
+        <br /><br />
       </div>
       <div>
-        <h3>Comments:</h3>
+        <h4>Comments:</h4>
         {blog.comments && blog.comments.length > 0 ? (
           <>
             <ul>
@@ -94,6 +93,7 @@ const SingleBlog = ({ blog }) => {
           <> no Comments</>
         )}
         <CommentForm blog={blog} />
+
       </div>
     </div>
   );

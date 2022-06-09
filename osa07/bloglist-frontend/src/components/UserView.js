@@ -8,7 +8,7 @@ const UserView = ({ user }) => {
 
   return (
     <>
-      <h2>{user.nimi}</h2>
+      <h3>{user.nimi}</h3>
       {/*{user.blogs}*/}
       <>
         <ul>

@@ -5,6 +5,10 @@ import { addCommentTo } from "../reducers/blogReducer"
 import { createNotification } from "../reducers/notificationReducer"
 import { createErrorMsg } from "../reducers/errorMsgReducer"
 
+const marginS = {
+  marginTop: 5,
+  marginBotton: 5,
+}
 
 // const BlogForm = ({ createBlog })
 const CommentForm = ({ blog }) => {
@@ -52,7 +56,7 @@ const CommentForm = ({ blog }) => {
             id="title-input"
           />
         </div>
-        <button type="submit">add comment</button>
+        <button style={marginS} type="submit">add comment</button>
       </form>
     </>
   )

@@ -21,7 +21,7 @@ const UserList = () => {
 
   return (
     <>
-      <h2>UserList</h2>
+      <h3>UserList</h3>
 
       {users.map(user =>
         <User key={user.id} user={user} />

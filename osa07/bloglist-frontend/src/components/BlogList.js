@@ -1,6 +1,7 @@
 //import { useSelector, useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import Blog from "../components/Blog"
+import Table from 'react-bootstrap/Table'
 
 const BlogList = ({ user }) => {
 
@@ -10,16 +11,24 @@ const BlogList = ({ user }) => {
   //console.log('u.id: ', user.id) // debug stuff for Blog component
   return (
     <>
-
-      {blogs.map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          //handleLike={handleLikeButton}
-          //handleDel={handleDelete}
-          u={user}
-        />
-      )}
+      <Table striped>
+        <tbody>
+          {blogs.map(blog =>
+            <tr key={blog.id}>
+              <td>
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  //handleLike={handleLikeButton}
+                  //handleDel={handleDelete}
+                  u={user}
+                />
+              </td>
+              <td>{blog.user.nimi}</td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
     </>
   )
 }
