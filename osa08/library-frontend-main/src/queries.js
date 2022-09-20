@@ -18,6 +18,7 @@ export const ALL_BOOKS = gql`
         name
       }
       published
+      genres
     }
   }
 `
@@ -56,4 +57,16 @@ export const LOGIN = gql`
       value
     }
   }
+`
+
+export const FIND_BOOKS_BY_GENRE = gql`
+query findBooksByGenre($selectedGenre: String!){
+  allBooks(genre: $selectedGenre) {
+    title
+    genres
+    author {
+      name
+    }     
+  }
+}
 `
