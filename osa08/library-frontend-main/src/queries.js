@@ -70,3 +70,11 @@ query findBooksByGenre($selectedGenre: String!){
   }
 }
 `
+
+export const ME = gql`
+query user{
+  me {
+    username
+    favoriteGenre
+  }
+}`

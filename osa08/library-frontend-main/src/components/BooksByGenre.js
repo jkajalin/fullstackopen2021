@@ -1,15 +1,15 @@
-import { useState } from "react"
 import { useQuery } from '@apollo/client'
 import { FIND_BOOKS_BY_GENRE } from '../queries'
 
-const Books = (props) => {
-  const [selectedGenre, setSelectedGenre] = useState('')
-  let books = []
-  if(props.books){
-    books = props.books
-  }
+const BooksByGenre = (props) => {
 
-  let genres = books.map( b => b.genres ).flat()
+  let books = []
+  //const [selectedGenre, setSelectedGenre] = useState('')
+  let selectedGenre = ''
+  if (props.genre) {
+    selectedGenre = props.genre
+    //setSelectedGenre(props.genre) 
+  }
    
   const result = useQuery(FIND_BOOKS_BY_GENRE, {
     variables: { selectedGenre },
@@ -22,29 +22,12 @@ const Books = (props) => {
   if (!props.show) {
     return null
   }
-  
-  if (!props.books)  {
-    return <div>books props missing...</div>
-  }
-  
-  let filteredgenres = []  
-  
-  genres.forEach( e => { 
-    if(!filteredgenres.includes(e)){
-      filteredgenres.push(e)
-    }    
-  })
-
-  //console.log(genres.flat())
-  //genres = genres.map( g => g.find(genres)  )
 
   return (
     <div>
-      <h2>books</h2>
-      Select genre: { filteredgenres.map( (g) => <button onClick={ () => setSelectedGenre(g)} key={g}>{g}</button>  ) }
-      <button onClick={() => setSelectedGenre('')}>all</button>
+      <h2>Recommended Books</h2>    
       <br /><br />
-      Selected genre: {selectedGenre}      
+      Favorite genre: {selectedGenre}      
       
       <table>
         <tbody>
@@ -67,5 +50,4 @@ const Books = (props) => {
     </div>
   )
 }
-
-export default Books
+export default BooksByGenre
