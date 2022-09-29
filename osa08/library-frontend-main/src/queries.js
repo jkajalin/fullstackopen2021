@@ -9,18 +9,26 @@ export const ALL_AUTHORS = gql`
     }
   }
 `
-export const ALL_BOOKS = gql`
-  query booksdata{
-    allBooks  {
-      title
+const BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    id
+    title
       author{
         id
         name
       }
       published
       genres
+  }
+`
+
+export const ALL_BOOKS = gql`
+  query booksdata{
+    allBooks  {
+      ...BookDetails
     }
   }
+  ${BOOK_DETAILS}
 `
 
 export const ADD_BOOK = gql`
@@ -78,3 +86,12 @@ query user{
     favoriteGenre
   }
 }`
+
+export const BOOK_ADDED = gql`  
+  subscription BookAdded {
+    bookAdded {
+      ...BookDetails
+    }
+  }  
+${BOOK_DETAILS}
+`
