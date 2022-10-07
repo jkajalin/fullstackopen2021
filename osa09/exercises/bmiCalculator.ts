@@ -11,11 +11,11 @@ const parseArguments = (args: Array<string>): BmiArgs => {
     return {
       value1: Number(args[2]),
       value2: Number(args[3])
-    }
+    };
   } else {
     throw new Error('Provided values were not numbers!');
   }
-}
+};
 
 const calculateBmi = ( height: number, weight: number ): string => {
   const bmi = weight / ( height * height ) *10000  ;
@@ -29,15 +29,15 @@ const calculateBmi = ( height: number, weight: number ): string => {
   if( bmi >= 30){
     return "Obese";
   }
-  return "missing or undefined args?"
-}
+  return "missing or undefined args?";
+};
 
 if( process.argv.length === 4 ){
   try {
     const { value1, value2 } = parseArguments(process.argv);
     console.log(calculateBmi( value1, value2 ));
   } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
+    let errorMessage = 'Something bad happened.';
     if (error instanceof Error) {
       errorMessage += ' Error: ' + error.message;
     }
@@ -48,4 +48,4 @@ if( process.argv.length === 4 ){
 
 
 //console.log(calculateBmi(180, 74))
-export default calculateBmi
+export default calculateBmi;
