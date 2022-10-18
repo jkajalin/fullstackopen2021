@@ -13,8 +13,9 @@ router.post('/', (req, res) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     //const newPatientEntry = req.body;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument    
     const newPatient = patientService.addPatient(toNewPatientEntry(req.body));
+    
     res.json(newPatient);
   } 
   catch ( error ) {
@@ -25,5 +26,10 @@ router.post('/', (req, res) => {
     res.status(400).send(errorMessage);    
   }
 });
+
+router.get( '/:id', (req, res ) => {
+  const patient = patientService.findById(String(req.params.id));
+  res.json(patient);
+} );
 
 export default router;
