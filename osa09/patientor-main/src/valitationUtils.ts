@@ -1,10 +1,12 @@
-import { Discharge, EntryWithoutId, Gender, HealthCardType, HealthCheckRating, NewPatientEntry } from "./types";
+import { Discharge, EntryWithoutId, Gender, HealthCardType, HealthCheckRating } from "./types";
+
+// lot of unnecessary and unused stuff here
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
 };
 
-const parseName = (name: unknown): string => {
+export const parseName = (name: unknown): string => {
   if (!name || !isString(name)) {
     throw new Error('Incorrect or missing name');
   }
@@ -18,12 +20,20 @@ const isDate = (date: string): boolean => {
 
 const parseDate = (date: unknown): string => {
   if (!date || !isString(date) || !isDate(date)) {
-      throw new Error('Incorrect or missing date: ' + date);
+      throw new Error( 'Incorrect or missing date: ' + String(date) );
   }
   return date;
 };
 
-const parseSsn = (ssn: unknown): string => {
+export const isValidDate = (date: unknown): boolean => {
+  if (!date || !isString(date) || !isDate(date)) {
+    return false;
+  }else{
+    return true;
+  }
+};
+
+export const parseSsn = (ssn: unknown): string => {
   if (!ssn|| !isString(ssn)) {
     throw new Error('Incorrect or missing ssn');
   }
@@ -36,9 +46,9 @@ const isGender = (param: any): param is Gender => {
   return Object.values(Gender).includes(param);
 };
 
-const parseGender = (gender: unknown): Gender => {
+export const parseGender = (gender: unknown): Gender => {
   if (!gender || !isGender(gender)) {
-      throw new Error('Incorrect or missing gender: ' + gender);
+      throw new Error('Incorrect or missing gender: ' + String(gender));
   }
   return gender;
 };
@@ -51,12 +61,12 @@ const isHealthCardType = ( param: any ): param is HealthCardType => {
 
 export const parseHealthCardType = ( htype: unknown ): HealthCardType => {
   if( !htype || !isHealthCardType(htype) ){
-    throw new Error('Incorrect or missing HealthCardType: ' + htype);
+    throw new Error('Incorrect or missing HealthCardType: ' + String(htype));
   }
   return htype;
 };
 
-const parseOccupation = (occupation: unknown): string => {
+export const parseOccupation = (occupation: unknown): string => {
   if (!occupation || !isString(occupation)) {
     throw new Error('Incorrect or missing occupation');
   }
@@ -87,21 +97,6 @@ const parseDiagnosisCodes = ( diagnosiscodes: unknown ): Array<Diagnosis['code']
 };
 */
 
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const toNewPatientEntry = ( object: any ): NewPatientEntry => {
-  const newEntry: NewPatientEntry = {
-    name: parseName(object.name),
-    dateOfBirth: parseDate(object.dateOfBirth),
-    ssn: parseSsn(object.ssn),
-    gender: parseGender(object.gender),
-    occupation: parseOccupation(object.occupation),
-    //entries: new Array<Entry>
-  };
-
-  return newEntry;
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isDischarge = ( discharge: any ): boolean => {
   
@@ -126,7 +121,7 @@ const isHealthCheckRating = (param: any): param is HealthCheckRating => {
 
 const parseHealthCheckRating = ( healthCheckRating: unknown ): HealthCheckRating => {
   if( healthCheckRating==undefined || healthCheckRating==null || !isHealthCheckRating ){
-    throw new Error('Incorrect or missing HealthCheckRating ' +healthCheckRating);
+    throw new Error('Incorrect or missing HealthCheckRating ' + String(healthCheckRating));
   }
   return healthCheckRating as HealthCheckRating;
 };
@@ -186,6 +181,3 @@ export const toNewDetailsEntry = ( object: any ): EntryWithoutId => {
   } 
   
 };
-
-
-export default toNewPatientEntry;

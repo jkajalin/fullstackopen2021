@@ -10,6 +10,12 @@ export enum Gender {
   Other = "other"
 }
 
+export enum HealthCardType {
+  HealthCheck = "HealthCheck",
+  Hospital = "Hospital",
+  OccupationalHealthcare = "OccupationalHealthcare"
+}
+
 interface BaseEntry {
   id: string;
   description: string;
@@ -66,3 +72,8 @@ export interface Patient {
   dateOfBirth?: string;
   entries?: Entry[];
 }
+
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+// Define Entry without the 'id' property
+export type EntryWithoutId = UnionOmit<Entry, 'id'>;

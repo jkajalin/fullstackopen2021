@@ -1,6 +1,7 @@
+import React from "react";
 import axios from "axios";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Diagnosis, Entry, HealthCheckEntry, HospitalEntry, OccupationalHealthcareEntry, Patient } from "../../types";
+import { Diagnosis, Entry, EntryWithoutId, HealthCheckEntry, HealthCheckRating, HospitalEntry, OccupationalHealthcareEntry, Patient } from "../../types";
 
 import { useParams } from "react-router";
 import { setPatientDetails, useStateValue } from "../../state";
@@ -9,11 +10,11 @@ import { apiBaseUrl } from "../../constants";
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 import Man4Icon from '@mui/icons-material/Man4';
+import AddEntryForm from "./AddEntryDetails";
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-let diagnosisList: Array<Diagnosis> ;
-
+//let diagnosisList: Array<Diagnosis> ;
 
 /*
 const PatientEntriesList = ( pat: Patient ) => {
@@ -39,22 +40,30 @@ const PatientEntriesList = ( pat: Patient ) => {
 };
 */
 
+
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface DiagnosisProps{
-  dlist: Diagnosis[];
+  //dlist: Diagnosis[];
   dcodes: Array<Diagnosis['code']>;
 }
+// Lis diagnosis codes in entry
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PatientDiagnosisList = ( {dlist, dcodes} : DiagnosisProps  ) => {
+const PatientDiagnosisList = ( {dcodes} : DiagnosisProps  ) => {
+  const [{ diagnoses }] = useStateValue();
   //dcodes.map(dc => <div key={dc}>{dlist.find( d => d.code === dc)}</div>);
   
-  return <div> { dcodes.map( dc => <div key={ dc }>{dc} { dlist.find( d => d.code === dc)?.name }</div>) } </div>;
+  return <div> { dcodes.map( dc => <div key={ dc }>{dc} { Object.values(diagnoses).find( d => d.code === dc)?.name }</div> ) } </div>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const HospitalEntryDetails = (e :HospitalEntry) => {
+const HospitalEntryDetails = ( {e} :HospitalEntryProps) => {
 
-  return <div>{e.type}</div>;
+  return <div>
+    { 
+      e.discharge? <div>Discharge {e.discharge.date} {e.discharge.criteria}</div>  : null
+    }
+  </div>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,51 +87,51 @@ interface HospitalEntryProps{
 const OccupationalHealthcareDetails  = ( {e} :OccupationalHealthcareProps ) => {
 
   return <div> 
-    {/*e.diagnosisCodes*/}
-    <br />    
-    
+    Employer: {e.employerName}
+    <br />
     {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    (diagnosisList && e.diagnosisCodes!= undefined )? <div><PatientDiagnosisList dcodes={ e.diagnosisCodes as Array<Diagnosis['code']> } dlist={diagnosisList} /></div> : " no diagnosis list"
+    ( e.diagnosisCodes!= undefined )? <div><PatientDiagnosisList dcodes={ e.diagnosisCodes as Array<Diagnosis['code']> } /></div> : null
     }
-    <br />Employer: {e.employerName}  
+    {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    ( e.sickLeave!= undefined )? <div><h4>Sick leave:</h4>
+      start date: {e.sickLeave.startDate}
+      <br />end date: {e.sickLeave.endDate}
+      </div> : null
+    }
+      
   </div>;
 };
 
 
-
 const EntriesDetails = ( {e} :EntryProps) => {
-  /*
-  const getDiagnosisList = async () => {
-    if ( e && !diagnosisList ) {
-      console.log("getting diagnoses");
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { data: diagnosesList } = await axios.get<Diagnosis[]>(`${apiBaseUrl}/diagnoses/`);
-        console.log(`updating`);
-        diagnosisList = diagnosesList;
-        console.log(diagnosisList[0]);
-        //dispatch( setPatientDetails(patient) );
-
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  void getDiagnosisList();
-  */  
-
+ 
   switch (e.type) {
     case "Hospital":
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      return <div>{e.diagnosisCodes}</div>; // Jatka tästä
+      return <div>
+        
+        {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          ( e.diagnosisCodes!= undefined )? <div><PatientDiagnosisList dcodes={ e.diagnosisCodes as Array<Diagnosis['code']> } /></div> : null
+        }
+        <div><HospitalEntryDetails e={e}/></div>
+      </div>; // Jatka tästä
 
     case "HealthCheck":
-      return <div>{e.diagnosisCodes}</div>;
+      return <div>
+        {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          ( e.diagnosisCodes!= undefined )? <div><PatientDiagnosisList dcodes={ e.diagnosisCodes as Array<Diagnosis['code']> } /></div> : null
+        }       
+        Health check rating: {
+        e.healthCheckRating
+        }
+      </div>;
 
     case "OccupationalHealthcare":      
-      return <div><OccupationalHealthcareDetails e={e} /></div>; // Jatka tästä          
+      return <div><OccupationalHealthcareDetails e={e} /></div>;       
   
     default:            
       
@@ -133,33 +142,15 @@ const EntriesDetails = ( {e} :EntryProps) => {
 
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patients}, dispatch] = useStateValue();
+  const [ { patients }, dispatch] = useStateValue();
+
+  const [error, setError] = React.useState<string>();
   
-  const getDiagnosisList = async () => {
-    if ( !diagnosisList ) {
-      console.log("getting diagnoses");
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { data: diagnosesList } = await axios.get<Diagnosis[]>(`${apiBaseUrl}/diagnoses/`);
-        console.log(`updating`);
-        diagnosisList = diagnosesList;
-        //console.log("debug "+diagnosisList[0].name);
-        //dispatch( setPatientDetails(patient) );
-
-      } catch (e) {
-        console.error(e);
-      }  
-           
-    }
-  };
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  void getDiagnosisList();
-
-  const patient = Object.values(patients).find( p => p.id === id);  
+   const patient = Object.values(patients).find( p => p.id === id);    
+  
+  //console.log(patient?.name);
 
   
-  
-  console.log(patient?.name);
   
   if(id && !patient?.ssn){
     const getPatientDetails = async () => {
@@ -173,9 +164,42 @@ const PatientPage = () => {
     };
     console.log(`updating ${id}`);
     void getPatientDetails();
-
-
   }
+
+  const submitNewEntry= async (values: EntryWithoutId) => {
+    
+    //let entryvalues;
+    try {
+      if(id && patient){
+        
+        const { data: newEntry } = await axios.post<Entry>(
+          `${apiBaseUrl}/patients/${id}/entries`,
+          values
+        );
+        console.log(newEntry);
+        if(!patient.entries){
+          //console.log("creating entries array");
+          //patient.entries= [newEntry];
+          patient.entries= new Array(newEntry);
+        }else{
+          patient.entries.push( newEntry );
+        }        
+        dispatch({ type: "SET_PATIENT_DETAILS", payload: patient });
+        
+      }
+      
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        console.error(e?.response?.data || "Unrecognized axios error");
+        setError(String(e?.response?.data) || "Unrecognized axios error");
+        setTimeout( () => setError(undefined), 5000 );
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+        setTimeout( () => setError(undefined), 5000 );
+      }
+    }
+  };
 
   if(patient){
     return <div>
@@ -185,7 +209,9 @@ const PatientPage = () => {
       <h3>Entries</h3>
       {/* <PatientEntriesList pat={patient} /> */}
       { patient.entries? 
-        Object.values(patient.entries).map( (e : Entry) => <div key={e.date} >{e.date}
+        Object.values(patient.entries).map( (e : Entry) => <div key={e.date} >
+        <br /><strong>{e.date}</strong>
+        <br /> Type: {e.type}
         <br /> Diagnosed by {e.specialist} 
         <br /> {e.description}
         <EntriesDetails e={e}/>        
@@ -193,7 +219,12 @@ const PatientPage = () => {
         
         : null
       }     
-      
+      {error!==undefined || error!==null ? <strong style={{ color: "red" }}>{error}</strong>: null}
+      <div>
+        <h3>Add new entry</h3>
+        <AddEntryForm onSubmit={submitNewEntry} onCancel={ () => { setError(undefined); } } />
+
+      </div>
     </div>;
   }else{
     return <div>error</div>;
